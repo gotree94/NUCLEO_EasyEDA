@@ -1,4 +1,4 @@
-# STM32F103 NUCLEO(MB1136) 부품 위치 → EasyEDA 자동 배치 가이드
+# STM32F103 NUCLEO(MB1136) 부품 위치 <br> → EasyEDA 자동 배치 가이드
 
 > 질문: Pick & Place CSV에 있는 `Designator / Mid X / Mid Y / Ref X / Ref Y / Rotation` 값을 스크립트로 만들어 EasyEDA에서 부품을 자동 배치할 수 있을까?
 
