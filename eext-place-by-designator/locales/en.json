@@ -1,0 +1,10 @@
+{
+  "No active PCB document. Open a PCB before running placement.": "No active PCB document. Open a PCB before running placement.",
+  "No valid component rows found in CSV. Expected header like Name,X(mil),Y(mil) or Name,X(mm),Y(mm),Rotation(deg).": "No valid component rows found in CSV. Expected header like Name,X(mil),Y(mil) or Name,X(mm),Y(mm),Rotation(deg).",
+  "No PCB components found. Place components via netlist import first.": "No PCB components found. Place components via netlist import first.",
+  "Batch placement completed! Success: ${1}, Failed: ${2}": "Batch placement completed! Success: ${1}, Failed: ${2}",
+  "\n\nSee log panel for failure details.": "\n\nSee log panel for failure details.",
+  "Error during placement: ${1}": "Error during placement: ${1}",
+  "Flip Y axis: ON (y = -y)": "Flip Y axis: ON (y = -y)",
+  "Flip Y axis: OFF (y as-is)": "Flip Y axis: OFF (y as-is)"
+}

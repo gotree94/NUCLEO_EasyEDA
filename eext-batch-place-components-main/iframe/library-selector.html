@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="Settings">设置</title>
+    <style>
+        * {
+            margin: 2px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .popup {
+            background: white;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #262626;
+            font-weight: 400;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 32px;
+            padding: 4px 15px !important;
+            margin: 2px 0;
+            border: 1px solid #d9d9d9;
+            border-radius: 0;
+            font-size: 14px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .form-input:hover {
+            border-color: #40a9ff;
+        }
+
+        .popup-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+            padding-top: 12px;
+        }
+
+        .btn {
+            padding: 6px 20px;
+            border-radius: 0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            outline: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+
+        .btn-primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+        }
+
+        .btn-primary:active {
+            background-color: #096dd9;
+            border-color: #096dd9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #2e7d32;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup">
+        <div class="popup-content">
+            <form id="libraryForm">
+                <div class="form-group">
+                    <label class="form-label" for="libraryType" data-i18n="Component Source:">元件来源：</label>
+                    <select id="libraryType" name="libraryType" class="form-input" onchange="onLibraryTypeChange()">
+                        <option value="personal" data-i18n="Personal Library">个人库</option>
+                        <option value="project" data-i18n="Project Library">工程库</option>
+                        <option value="system" data-i18n="System Library">系统库</option>
+                        <option value="other" data-i18n="Other Library">其他库</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="specificLibraryGroup" style="display: none;">
+                    <label class="form-label" for="specificLibrary" data-i18n="Select Specific Library">选择具体库</label>
+                    <select id="specificLibrary" name="specificLibrary" class="form-input">
+                        <option value="" data-i18n="Please select a library...">请选择库...</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        
+        <div class="popup-footer" style="padding: 0 15px 15px 15px;">
+            <button type="button" class="btn btn-primary" onclick="saveLibrarySelection()" data-i18n="Save">保存</button>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+    </div>
+
+    <script>
+        var edaObj = (typeof eda !== 'undefined') ? eda : (window.parent && window.parent.eda);
+        function t(tag, ...args) {
+            if (edaObj && edaObj.sys_I18n) return edaObj.sys_I18n.text(tag, undefined, undefined, ...args);
+            return tag;
+        }
+
+        function applyI18n() {
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var tag = el.getAttribute('data-i18n');
+                el.textContent = t(tag);
+            });
+            document.title = t('Settings');
+        }
+
+        let isProcessing = false;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            applyI18n();
+            loadLibrarySelection();
+        });
+
+        // 库类型改变事件
+        async function onLibraryTypeChange() {
+            const libraryType = document.getElementById('libraryType').value;
+            const specificLibraryGroup = document.getElementById('specificLibraryGroup');
+            const specificLibrarySelect = document.getElementById('specificLibrary');
+            
+            if (libraryType === 'other') {
+                // 显示具体库选择框
+                specificLibraryGroup.style.display = 'block';
+                
+                // 清空现有选项
+                specificLibrarySelect.innerHTML = '<option value="">' + t('Please select a library...') + '</option>';
+                
+                try {
+                    // 获取所有库列表
+                    const allLibraries = await eda.lib_LibrariesList.getAllLibrariesList();
+                    console.log('所有库列表:', allLibraries);
+                    
+                    // 添加到下拉框
+                    allLibraries.forEach(library => {
+                        const option = document.createElement('option');
+                        option.value = library.uuid;
+                        option.textContent = library.name;
+                        specificLibrarySelect.appendChild(option);
+                    });
+                    
+                    // 加载已保存的具体库选择
+                    const savedSpecificLibraryUuid = await eda.sys_Storage.getExtensionUserConfig('selectedSpecificLibraryUuid');
+                    if (savedSpecificLibraryUuid) {
+                        specificLibrarySelect.value = savedSpecificLibraryUuid;
+                    }
+                    
+                } catch (error) {
+                    console.error('获取库列表失败:', error);
+                    showError(t('Failed to get library list: ${1}', error.message));
+                }
+            } else {
+                // 隐藏具体库选择框
+                specificLibraryGroup.style.display = 'none';
+            }
+        }
+
+        // 加载已保存的库选择
+        async function loadLibrarySelection() {
+            try {
+                const savedLibraryType = await eda.sys_Storage.getExtensionUserConfig('selectedLibraryType');
+                if (savedLibraryType) {
+                    document.getElementById('libraryType').value = savedLibraryType;
+                    
+                    // 如果保存的是其他库，触发类型改变事件来显示具体库选择框
+                    if (savedLibraryType === 'other') {
+                        await onLibraryTypeChange();
+                    }
+                }
+            } catch (error) {
+                console.error('加载库选择失败:', error);
+            }
+        }
+
+        // 保存库选择
+        async function saveLibrarySelection() {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            const libraryType = document.getElementById('libraryType').value;
+            
+            try {
+                // 根据选择的库类型获取对应的UUID
+                let libraryUuid = '';
+                
+                switch (libraryType) {
+                    case 'personal':
+                        libraryUuid = await eda.lib_LibrariesList.getPersonalLibraryUuid();
+                        break;
+                    case 'project':
+                        libraryUuid = await eda.lib_LibrariesList.getProjectLibraryUuid();
+                        break;
+                    case 'system':
+                        libraryUuid = await eda.lib_LibrariesList.getSystemLibraryUuid();
+                        break;
+                    case 'other':
+                        // 对于其他库，使用用户选择的具体库
+                        const specificLibraryUuid = document.getElementById('specificLibrary').value;
+                        if (!specificLibraryUuid) {
+                            showError(t('Please select a specific library'));
+                            isProcessing = false;
+                            return;
+                        }
+                        libraryUuid = specificLibraryUuid;
+                        // 保存具体库选择
+                        await eda.sys_Storage.setExtensionUserConfig('selectedSpecificLibraryUuid', specificLibraryUuid);
+                        break;
+                }
+                
+                // 保存库类型和UUID到Storage
+                await eda.sys_Storage.setExtensionUserConfig('selectedLibraryType', libraryType);
+                await eda.sys_Storage.setExtensionUserConfig('selectedLibraryUuid', libraryUuid);
+                
+                // 显示成功消息
+                showSuccess(t('Library selection saved!'));
+                console.log('已保存库UUID:', libraryUuid);
+                
+            } catch (error) {
+                console.error('保存库选择失败:', error);
+                showError(t('Save failed: ${1}', error.message));
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // 3秒后隐藏错误消息
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            const successElement = document.getElementById('successMessage');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            
+            // 3秒后隐藏成功消息
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

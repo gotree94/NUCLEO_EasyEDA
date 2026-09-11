@@ -1,0 +1,51 @@
+{
+  "name": "place-by-designator",
+  "uuid": "0d6b241bd7aa49cca5066a3ee4537683",
+  "displayName": "Place by Designator",
+  "description": "Batch move existing PCB components by Designator from a P&P CSV (X/Y/Rotation in mil or mm)",
+  "version": "1.0.2",
+  "publisher": "local",
+  "engines": {
+    "eda": "^3.0.0"
+  },
+  "license": "MIT",
+  "categories": "PCB",
+  "keywords": [
+    "PCB",
+    "designator",
+    "batch",
+    "placement",
+    "csv"
+  ],
+  "images": {
+    "logo": "./images/logo.jpg"
+  },
+  "activationEvents": {},
+  "entry": "./dist/index",
+  "dependentExtensions": {},
+  "headerMenus": {
+    "pcb": [
+      {
+        "id": "PlaceByDesignatorMenu",
+        "title": "Place by Designator",
+        "menuItems": [
+          {
+            "id": "PlaceByDesignator",
+            "title": "Place Components from CSV...",
+            "registerFn": "placeByDesignator"
+          },
+          {
+            "id": "ToggleFlipY",
+            "title": "Toggle Flip Y Axis",
+            "registerFn": "toggleFlipY"
+          },
+          {
+            "id": "AboutPlaceByDesignator",
+            "title": "About...",
+            "registerFn": "about"
+          }
+        ]
+      }
+    ]
+  }
+}
