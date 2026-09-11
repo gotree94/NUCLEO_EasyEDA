@@ -193,3 +193,21 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Administrator\Desktop\NUCLEO_
 - EasyEDA PCB 파일(JSON) 형식: https://docs.easyeda.com/en/DocumentFormat/5-EasyEDA-PCB-File-Object/
 - EasyEDA Pro 일괄 배치 확장: https://github.com/easyeda/eext-batch-place-components
 - EasyEDA P&P 내보내기 옵션: https://docs.easyeda.com/en/PCB/Export-Coordinate/
+
+---
+
+## 11. 방법 3 — Designator 기반 확장 `place-by-designator` (Pro 전용, 회전 포함) ★신규
+
+> 기존 방법 2(공식 확장)는 **풋프린트명 매칭 + 신규 생성 + 회전 미지원**이라,
+> ST 보드의 자체 풋프린트와 회전값을 처리하지 못했었습니다.
+> 이 폴더에 만든 **`place-by-designator_v1.0.0.eext`** 는 그 문제를 해결합니다:
+> **이미 네트리스트로 배치된 부품을 Designator 기준으로 찾아 X/Y + 회전을 일괄 적용**합니다.
+
+- **적용 대상**: EasyEDA Pro에서 열린 PCB (예: `NUCLEO_STM32F103.eprj2`)
+- **동작 방식**: `eda.pcb_PrimitiveComponent.getAll()` → Designator 매칭 → `setState_X/Y/Rotation` → `done()`
+- **입력 CSV**: 이 폴더의 **`batch_positions_EasyEDAPro_rot.csv`** (헤더 `Name,X(mil),Y(mil),Rotation(deg)`, 172개)
+- **설치**: EasyEDA Pro → Extensions → Install → `.eext` 파일 선택
+- **실행**: PCB 메뉴의 **Place by Designator → Place Components from CSV...** → CSV 선택
+- **Y축 반전**: 위치가 상하로 뒤집히면 **Toggle Flip Y Axis** 메뉴로 켜고 재실행
+
+자세한 사용법은 `eext-place-by-designator\README.md` 참고.
