@@ -67,12 +67,12 @@ EasyEDA의 화면 좌표(캔버스) 단위는 **pixel**이고, 변환식은 다�
 3. **좌표 원점 확인**
    - PCB 에디터 좌측 상단의 좌표 원점(녹색 십자)이 배치 기준입니다. CSV 좌표는 보드 기준점이 (0,0)인 좌표이므로, 원점을 해당 위치(예: 보드 왼쪽 아래 모서리)에 놓고 실행하거나, 기본 원점 그대로 실행 후 전체를 드래그로 보정해도 됩니다.
 4. **Scripts 기능 활성화**
-   - 우측 상단 **설정(톱니바퀴) 아이콘 → "Extensions/확장 설정"** 에서 Scripts가 켜져 있는지 확인하고, 변경 시 에디터를 **새로고침**합니다.
+   - 우측 상단 **Settings (톱니바퀴) 아이콘 → "Extensions Settings"** 에서 Scripts가 켜져 있는지 확인하고, 변경 시 에디터를 **새로고침**합니다.
 
 ### 4-2. 실행 절차
 
 1. 이 폴더의 `batch_script_EasyEDAStd.js` 를 메모장으로 엽니다.
-2. PCB 에디터에서 **설정(톱니) → Scripts → "Run Script code"** 창을 열고, 파일 내용 전체를 붙여넣습니다.
+2. PCB 에디터에서 **Settings (톱니) → Scripts → "Run Script code"** 창을 열고, 파일 내용 전체를 붙여넣습니다.
 3. `Run` 버튼을 누릅니다.
 4. 완료 메시지(`Auto placement done: 172 / 172` , 못 찾은 Designator 목록)를 확인합니다.
 
@@ -98,7 +98,7 @@ EasyEDA의 화면 좌표(캔버스) 단위는 **pixel**이고, 변환식은 다�
 
 1. GitHub 저장소: **`github.com/easyeda/eext-batch-place-components`**
 2. `Code → Download ZIP` 으로 받아 압축을 풉니다.
-3. EasyEDA Pro에서 **"확장(Extensions)" → 설치** 후 재시작합니다.
+3. EasyEDA Pro에서 **"Extensions" → Install** 후 재시작합니다.
 
 ### 5-2. 입력 CSV 준비
 
@@ -116,8 +116,8 @@ D4,400,1675
 
 ### 5-3. 실행
 
-1. PCB 에디터에서 메뉴 **"부품 배치/放置元件" → "설정"** 에서 사용할 라이브러리(시스템/개인/프로젝트)를 선택합니다.
-2. **"일괄 배치/批量放置"** 를 선택하고 CSV를 고릅니다.
+1. PCB 에디터에서 메뉴 **"Batch Place Components" → "Settings"** 에서 사용할 라이브러리(System Library / Personal Library / Project Library)를 선택합니다.
+2. **"Batch Placement"** 를 선택하고 CSV를 고릅니다.
 3. 확장 창 로그에서 성공/실패 수를 확인합니다. 실패 원인 대부분은 **풋프린트(또는 기호) 이름이 라이브러리와 대소문자까지 다를 때**입니다.
 
 ### 5-4. 제약
